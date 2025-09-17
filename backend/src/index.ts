@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { redis } from './redis';
 import { shortenRouter , redirectRouter } from './routes';
+import { globalLimiter, shortenLimiter } from './middleware';
 dotenv.config();
 
 const app = express();
@@ -26,9 +27,15 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Rate limiting
+app.use('/api', globalLimiter);
+
 // API routes
 app.use('/api', shortenRouter);
 app.use('/', redirectRouter);
+
+// Stricter rate limiting for shorten endpoint
+app.use('/api/shorten', shortenLimiter);
 
 // Health check endpoint
 app.get('/api/health', (_req, res) => {
