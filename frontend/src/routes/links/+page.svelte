@@ -20,8 +20,9 @@
 	let currentPage = 0;
 	let totalCount = 0;
 	let hasMore = false;
-	const pageSize = 20;
+	const pageSize = 10;
 	let viewMode: 'table' | 'grid' = 'table';
+	let sortBy = 'newest';
 
 	onMount(async () => { await loadLinks() });
 
@@ -33,7 +34,8 @@
 			const skip = currentPage * pageSize;
 			const params = new URLSearchParams({
 				skip: skip.toString(),
-				take: pageSize.toString()
+				take: pageSize.toString(),
+				sort: sortBy
 			});
 			
 			if (searchTerm.trim()) {
@@ -98,6 +100,11 @@
 	function handleViewChange(view: 'table' | 'grid') {
 		viewMode = view;
 	}
+
+	async function handleSortChange() {
+		currentPage = 0;
+		await loadLinks();
+	}
 </script>
 
 <div class="container">
@@ -120,7 +127,7 @@
 						class="search-input"
 					/>
 					{#if searchTerm}
-						<button class="clear-btn" on:click={() => { searchTerm = ''; handleSearch(); }}>
+						<button class="clear-btn" on:click={() => { searchTerm = ''; handleSearch(); }} aria-label="Clear search">
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<line x1="18" y1="6" x2="6" y2="18"/>
 								<line x1="6" y1="6" x2="18" y2="18"/>
@@ -136,7 +143,17 @@
 					<span>Search</span>
 				</button>
 			</div>
-			<ViewToggle currentView={viewMode} onViewChange={handleViewChange} />
+			<div class="controls-group">
+				<div class="sort-dropdown">
+					<select bind:value={sortBy} on:change={handleSortChange}>
+						<option value="newest">Newest</option>
+						<option value="oldest">Oldest</option>
+						<option value="az">A–Z</option>
+						<option value="za">Z–A</option>
+					</select>
+				</div>
+				<ViewToggle currentView={viewMode} onViewChange={handleViewChange} />
+			</div>
 		</div>
 	</div>
 
@@ -176,8 +193,11 @@
 					on:click={() => handlePageChange('prev')} 
 					disabled={currentPage === 0 || loading}
 					class="pagination-btn"
+					title="Previous Page"
 				>
-					Previous
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M15 18l-6-6 6-6"/>
+					</svg>
 				</button>
 				
 				<span class="page-info">
@@ -188,8 +208,11 @@
 					on:click={() => handlePageChange('next')} 
 					disabled={!hasMore || loading}
 					class="pagination-btn"
+					title="Next Page"
 				>
-					Next
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M9 18l6-6-6-6"/>
+					</svg>
 				</button>
 			</div>
 		{/if}
@@ -213,7 +236,7 @@
 		gap: 1rem;
 	}
 
-	h1 {
+	h2 {
 		margin: 0;
 		color: #333;
 	}
@@ -316,6 +339,49 @@
 		box-shadow: none;
 	}
 
+	.controls-group {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.sort-dropdown {
+		position: relative;
+	}
+
+	.sort-dropdown select {
+		appearance: none;
+		background: white;
+		border: 2px solid #e1e5e9;
+		border-radius: 8px;
+		padding: 0.75rem 2.5rem 0.75rem 1rem;
+		font-size: 1rem;
+		color: #333;
+		cursor: pointer;
+		transition: border-color 0.2s, box-shadow 0.2s;
+		min-width: 140px;
+	}
+
+	.sort-dropdown select:focus {
+		outline: none;
+		border-color: #007bff;
+		box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+	}
+
+	.sort-dropdown::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		right: 1rem;
+		transform: translateY(-50%);
+		width: 0;
+		height: 0;
+		border-left: 5px solid transparent;
+		border-right: 5px solid transparent;
+		border-top: 5px solid #6c757d;
+		pointer-events: none;
+	}
+
 	.results-info {
 		margin-bottom: 1rem;
 		color: #666;
@@ -365,32 +431,41 @@
 		justify-content: center;
 		align-items: center;
 		gap: 1rem;
+		margin-top: 2rem;
 	}
 
 	.pagination-btn {
-		padding: 0.5rem 1rem;
-		background-color: #007bff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.75rem;
+		background-color: #6c757d;
 		color: white;
 		border: none;
-		border-radius: 4px;
-		font-size: 0.9rem;
+		border-radius: 6px;
 		cursor: pointer;
-		transition: background-color 0.2s;
+		transition: all 0.2s ease;
+		width: 44px;
+		height: 44px;
 	}
 
 	.pagination-btn:hover:not(:disabled) {
-		background-color: #0056b3;
+		background-color: #5a6268;
+		transform: translateY(-1px);
 	}
 
 	.pagination-btn:disabled {
-		background-color: #6c757d;
+		background-color: #e9ecef;
+		color: #6c757d;
 		cursor: not-allowed;
+		transform: none;
 	}
 
 	.page-info {
-		color: #666;
+		color: #495057;
 		font-size: 0.9rem;
-		font-weight: 500;
+		font-weight: 600;
+		padding: 0 0.5rem;
 	}
 
 	@media (max-width: 768px) {
@@ -424,6 +499,16 @@
 		.search-btn {
 			width: 100%;
 			justify-content: center;
+		}
+
+		.controls-group {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.75rem;
+		}
+
+		.sort-dropdown select {
+			width: 100%;
 		}
 
 		.pagination {
