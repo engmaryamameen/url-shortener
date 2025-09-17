@@ -4,8 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { redis } from './redis';
-import shortenRouter from './routes/shorten';
-
+import { shortenRouter , redirectRouter } from './routes';
 dotenv.config();
 
 const app = express();
@@ -29,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // API routes
 app.use('/api', shortenRouter);
+app.use('/', redirectRouter);
 
 // Health check endpoint
 app.get('/api/health', (_req, res) => {
