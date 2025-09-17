@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
+	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+
 	let analytics: any = null;
 	let loading = true;
 	let error = '';
@@ -10,7 +12,7 @@
 		const slug = $page.params.slug;
 		
 		try {
-			const response = await fetch(`http://localhost:3000/api/analytics/${slug}`);
+			const response = await fetch(`${BACKEND_URL}/api/analytics/${slug}`);
 			const data = await response.json();
 
 			if (!response.ok) {

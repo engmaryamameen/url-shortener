@@ -8,8 +8,8 @@
 			<div class="footer-links">
 				<div class="footer-section">
 					<h4>Product</h4>
-					<a href="/">Create Link</a>
-					<a href="/links">My Links</a>
+					<a href="/new">Create Link</a>
+					<a href="/links">All Links</a>
 				</div>
 				<div class="footer-section">
 					<h4>Features</h4>

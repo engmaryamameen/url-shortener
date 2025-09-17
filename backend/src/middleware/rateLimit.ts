@@ -8,7 +8,7 @@ const globalLimiter = rateLimit({
     prefix: 'rl:global:'
   }),
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: process.env['NODE_ENV'] === 'production' ? 100 : 1000,
   standardHeaders: true,
   legacyHeaders: false
 })
@@ -19,7 +19,7 @@ const shortenLimiter = rateLimit({
     prefix: 'rl:shorten:'
   }),
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: process.env['NODE_ENV'] === 'production' ? 10 : 100,
   standardHeaders: true,
   legacyHeaders: false
 })
