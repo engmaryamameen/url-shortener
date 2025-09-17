@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import { redis } from './redis';
+import { ensureRedisConnection } from './redis';
 import { shortenRouter , redirectRouter, qrcodeRouter } from './routes';
 import { globalLimiter, shortenLimiter } from './middleware';
 dotenv.config();
@@ -16,7 +16,7 @@ app.use(helmet());
 
 // CORS configuration
 app.use(cors({
-  origin: process.env['FRONTEND_URL'] || 'http://localhost:3000',
+  origin: process.env['FRONTEND_URL'] || 'http://localhost:5173',
   credentials: true
 }));
 
@@ -55,7 +55,7 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 
 const startServer = async () => {
   try {
-    await redis.connect()
+    await ensureRedisConnection();
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
