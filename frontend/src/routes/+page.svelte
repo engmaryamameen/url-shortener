@@ -2,6 +2,7 @@
 	let url = '';
 	let slug = '';
 	let shortUrl = '';
+	let shortSlug = '';
 	let error = '';
 	let loading = false;
 	let copied = false;
@@ -24,7 +25,7 @@
 				},
 				body: JSON.stringify({
 					url: url.trim(),
-					...(slug.trim() && { slug: slug.trim() })
+					...(slug.trim() ? { slug: slug.trim() } : {})
 				})
 			});
 
@@ -35,6 +36,7 @@
 			}
 
 			shortUrl = data.shortUrl;
+			shortSlug = data.slug;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'An error occurred';
 		} finally {
@@ -76,7 +78,6 @@
 				type="text"
 				bind:value={slug}
 				placeholder="my-custom-slug"
-				pattern="^[A-Za-z0-9-_]{3,64}$"
 				title="3-64 characters, letters, numbers, hyphens, underscores only"
 				disabled={loading}
 			/>
@@ -101,6 +102,9 @@
 				<button type="button" on:click={copyToClipboard} class="copy-btn">
 					{copied ? 'Copied!' : 'Copy'}
 				</button>
+			</div>
+			<div class="analytics-link">
+				<a href="/analytics/{shortSlug}" class="analytics-btn">View Analytics</a>
 			</div>
 		</div>
 	{/if}
@@ -214,5 +218,25 @@
 
 	.copy-btn:hover:not(:disabled) {
 		background-color: #1e7e34;
+	}
+
+	.analytics-link {
+		margin-top: 1rem;
+		text-align: center;
+	}
+
+	.analytics-btn {
+		display: inline-block;
+		padding: 0.75rem 1.5rem;
+		background-color: #6c757d;
+		color: white;
+		text-decoration: none;
+		border-radius: 6px;
+		font-weight: 500;
+		transition: background-color 0.2s;
+	}
+
+	.analytics-btn:hover {
+		background-color: #5a6268;
 	}
 </style>
