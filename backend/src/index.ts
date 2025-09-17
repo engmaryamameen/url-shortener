@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { redis } from './redis';
-import { shortenRouter , redirectRouter } from './routes';
+import { shortenRouter , redirectRouter, qrcodeRouter } from './routes';
 import { globalLimiter, shortenLimiter } from './middleware';
 dotenv.config();
 
@@ -33,7 +33,7 @@ app.use('/api', globalLimiter);
 // API routes
 app.use('/api', shortenRouter);
 app.use('/', redirectRouter);
-
+app.use('/api', qrcodeRouter);
 // Stricter rate limiting for shorten endpoint
 app.use('/api/shorten', shortenLimiter);
 
