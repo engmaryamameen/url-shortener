@@ -2,8 +2,8 @@
 	<div class="nav-container">
 		<a href="/" class="nav-brand">Shortly</a>
 		<div class="nav-links">
-			<a href="/" class="nav-link">Create New</a>
-			<a href="/links" class="nav-link">My Links</a>
+			<a href="/new" class="nav-link">Create New</a>
+			<a href="/links" class="nav-link">All Links</a>
 		</div>
 	</div>
 </nav>
