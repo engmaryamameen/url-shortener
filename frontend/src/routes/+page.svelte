@@ -76,7 +76,7 @@
 </script>
 
 <div class="container">
-	<h1>URL Shortener</h1>
+	<h1>Create Short URL</h1>
 	
 	<form on:submit|preventDefault={handleSubmit}>
 		<div class="form-group">

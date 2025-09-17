@@ -62,10 +62,7 @@
 </script>
 
 <div class="container">
-	<div class="header">
-		<h1>All Links</h1>
-		<a href="/" class="back-link">← Back to Home</a>
-	</div>
+	<h1>My Links</h1>
 
 	{#if loading}
 		<div class="loading">Loading links...</div>
@@ -137,33 +134,9 @@
 		font-family: system-ui, -apple-system, sans-serif;
 	}
 
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 2rem;
-		border-bottom: 2px solid #e9ecef;
-		padding-bottom: 1rem;
-	}
-
 	h1 {
-		margin: 0;
+		margin: 0 0 2rem 0;
 		color: #333;
-	}
-
-	.back-link {
-		color: #007bff;
-		text-decoration: none;
-		font-weight: 500;
-		padding: 0.5rem 1rem;
-		border: 1px solid #007bff;
-		border-radius: 4px;
-		transition: all 0.2s;
-	}
-
-	.back-link:hover {
-		background-color: #007bff;
-		color: white;
 	}
 
 	.loading {
@@ -287,15 +260,6 @@
 			padding: 1rem;
 		}
 
-		.header {
-			flex-direction: column;
-			gap: 1rem;
-			align-items: stretch;
-		}
-
-		.back-link {
-			text-align: center;
-		}
 
 		th, td {
 			padding: 0.5rem 0.25rem;
