@@ -67,7 +67,12 @@
 						{/if}
 					</td>
 					<td class="actions-cell">
-						<a href="/analytics/{link.slug}" class="analytics-btn-small">Analytics</a>
+						<a href="/analytics/{link.slug}" class="analytics-btn" title="View Analytics">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M3 3v18h18"/>
+								<path d="M9 9l3 3 3-3"/>
+							</svg>
+						</a>
 					</td>
 				</tr>
 			{/each}
@@ -186,20 +191,22 @@
 		white-space: nowrap;
 	}
 
-	.analytics-btn-small {
-		display: inline-block;
-		padding: 0.3rem 0.6rem;
-		background-color: #6c757d;
+	.analytics-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		background: #6c757d;
 		color: white;
 		text-decoration: none;
-		border-radius: 4px;
-		font-weight: 500;
-		font-size: 0.75rem;
-		transition: background-color 0.2s;
+		border-radius: 6px;
+		transition: all 0.2s ease;
 	}
 
-	.analytics-btn-small:hover {
-		background-color: #5a6268;
+	.analytics-btn:hover {
+		background: #5a6268;
+		transform: translateY(-1px);
 	}
 
 	@media (max-width: 768px) {
