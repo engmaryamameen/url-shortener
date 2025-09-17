@@ -6,6 +6,7 @@
 	let error = '';
 	let loading = false;
 	let copied = false;
+	let results: Array<{shortUrl: string, slug: string, qrCodeUrl?: string}> = [];
 
 	async function handleSubmit() {
 		if (!url.trim()) {
@@ -16,6 +17,7 @@
 		loading = true;
 		error = '';
 		shortUrl = '';
+		shortSlug = '';
 
 		try {
 			const response = await fetch('http://localhost:3000/api/shorten', {
@@ -37,6 +39,9 @@
 
 			shortUrl = data.shortUrl;
 			shortSlug = data.slug;
+			
+			const qrCodeUrl = await fetchQRCode(data.slug);
+			results = [...results, { shortUrl: data.shortUrl, slug: data.slug, qrCodeUrl }];
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'An error occurred';
 		} finally {
@@ -44,9 +49,24 @@
 		}
 	}
 
-	async function copyToClipboard() {
+	async function fetchQRCode(slug: string): Promise<string | undefined> {
 		try {
-			await navigator.clipboard.writeText(shortUrl);
+			const response = await fetch(`http://localhost:3000/api/qrcode/${slug}`);
+			if (!response.ok) {
+				console.error('Failed to fetch QR code:', response.status);
+				return undefined;
+			}
+			const blob = await response.blob();
+			return URL.createObjectURL(blob);
+		} catch (err) {
+			console.error('QR code fetch error:', err);
+			return undefined;
+		}
+	}
+
+	async function copyToClipboard(url: string) {
+		try {
+			await navigator.clipboard.writeText(url);
 			copied = true;
 			setTimeout(() => (copied = false), 2000);
 		} catch (err) {
@@ -94,18 +114,38 @@
 		</div>
 	{/if}
 
-	{#if shortUrl}
-		<div class="result">
-			<h3>Your Short URL:</h3>
-			<div class="short-url-container">
-				<input type="text" value={shortUrl} readonly class="short-url" />
-				<button type="button" on:click={copyToClipboard} class="copy-btn">
-					{copied ? 'Copied!' : 'Copy'}
-				</button>
-			</div>
-			<div class="analytics-link">
-				<a href="/analytics/{shortSlug}" class="analytics-btn">View Analytics</a>
-			</div>
+	{#if results.length > 0}
+		<div class="results">
+			{#each results as result, index}
+				<div class="result">
+					<h3>Short URL #{index + 1}:</h3>
+					<div class="short-url-container">
+						<input type="text" value={result.shortUrl} readonly class="short-url" />
+						<button type="button" on:click={() => copyToClipboard(result.shortUrl)} class="copy-btn">
+							{copied ? 'Copied!' : 'Copy'}
+						</button>
+					</div>
+					<div class="qr-section">
+						<div class="qr-code">
+							{#if result.qrCodeUrl}
+								<img 
+									src={result.qrCodeUrl} 
+									alt="QR Code for {result.shortUrl}"
+									width="200"
+									height="200"
+								/>
+							{:else}
+								<div class="qr-placeholder">
+									<span>QR Code unavailable</span>
+								</div>
+							{/if}
+						</div>
+						<div class="actions">
+							<a href="/analytics/{result.slug}" class="analytics-btn">View Analytics</a>
+						</div>
+					</div>
+				</div>
+			{/each}
 		</div>
 	{/if}
 </div>
@@ -185,8 +225,14 @@
 		border-radius: 6px;
 	}
 
-	.result {
+	.results {
 		margin-top: 2rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.result {
 		padding: 1.5rem;
 		background-color: #d4edda;
 		border: 1px solid #c3e6cb;
@@ -220,9 +266,46 @@
 		background-color: #1e7e34;
 	}
 
-	.analytics-link {
+	.qr-section {
 		margin-top: 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.qr-code {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 1rem;
+		background-color: white;
+		border-radius: 8px;
+		border: 1px solid #c3e6cb;
+	}
+
+	.qr-code img {
+		display: block;
+		border-radius: 4px;
+	}
+
+	.qr-placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 200px;
+		height: 200px;
+		background-color: #f8f9fa;
+		border: 2px dashed #dee2e6;
+		border-radius: 4px;
+		color: #6c757d;
+		font-size: 0.9rem;
 		text-align: center;
+	}
+
+	.actions {
+		display: flex;
+		justify-content: center;
 	}
 
 	.analytics-btn {
@@ -238,5 +321,21 @@
 
 	.analytics-btn:hover {
 		background-color: #5a6268;
+	}
+
+	@media (max-width: 768px) {
+		.qr-section {
+			gap: 0.75rem;
+		}
+
+		.qr-code img {
+			width: 150px;
+			height: 150px;
+		}
+
+		.qr-placeholder {
+			width: 150px;
+			height: 150px;
+		}
 	}
 </style>
