@@ -1,50 +1,74 @@
-# Project 04 — URL Shortener
+# URL Shortener
 
-A modern URL shortener service that creates short links and provides detailed analytics tracking for click data and user engagement.
+A production-grade URL shortener with analytics, QR code generation, rate limiting, and modern frontend.
 
 ## Features
 
-- **URL Shortening**: Convert long URLs into short, shareable links
-- **Custom Aliases**: Create custom short codes for branded links
-- **Analytics Dashboard**: Track clicks, geographic data, and referral sources
-- **QR Code Generation**: Generate QR codes for easy mobile sharing
-- **Link Management**: Edit, delete, and organize your shortened URLs
-- **Bulk Operations**: Import/export multiple URLs at once
-- **API Access**: RESTful API for programmatic access
-- **Rate Limiting**: Built-in protection against abuse
+- Create short links with optional custom slugs
+- Redirect with Redis caching for speed
+- Analytics tracking (clicks, IP, user agent, referer, date)
+- QR code generation per link
+- Pagination, search, and sorting (A–Z, Z–A, newest, oldest)
+- Table and Grid views in the frontend
+- Rate limiting for abuse protection
+- Docker + GitHub Actions CI pipeline
 
 ## Tech Stack
 
-- **Backend**: Node.js with Express.js framework
-- **Database**: PostgreSQL for persistent data storage
-- **Cache**: Redis for high-performance caching and session management
-- **Frontend**: Vue.js or Svelte for modern, reactive user interface
-- **Infrastructure**: Docker containers with docker-compose for local development
+- **Frontend**: SvelteKit (TypeScript)
+- **Backend**: Node.js, Express
+- **Database**: PostgreSQL
+- **Cache/Rate Limiting**: Redis
+- **ORM**: Prisma
+- **Tests**: Jest + Supertest
+- **CI/CD**: GitHub Actions
+- **Containerization**: Docker & Docker Compose
+
+## Architecture
+
+```
+[ User (Browser) ]
+│
+▼
+[ Frontend (SvelteKit) ]
+│
+▼
+┌───────────────────────────────┐
+│ Backend (Express)             │
+│ - /api/shorten                │
+│ - /api/redirect/:slug         │
+│ - /api/analytics/:slug        │
+│ - /api/qrcode/:slug           │
+│ - /api/links                  │
+│ - Middleware: rate limiting   │
+└───────────────────────────────┘
+│
+┌──────┴────────────┐
+│                   │
+▼                   ▼
+[ PostgreSQL ]      [ Redis ]
+Links & clicks      Cache
+Analytics           Rate limits
+```
 
 ## Quickstart
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/engmaryamameen/URL-Shortener.git
-   cd URL-Shortener
-   ```
+```bash
+git clone https://github.com/engmaryamameen/url-shortener.git
+   cd url-shortener
+docker compose up --build
+```
 
-2. Start the development environment:
-   ```bash
-   docker compose up --build
-   ```
+- Backend → http://localhost:3000
+- Frontend → http://localhost:5173
 
-3. Access the application:
-   - Backend API: http://localhost:3000
-   - Database: localhost:5432
-   - Redis: localhost:6379
+## Tests
 
-## Deployment
+```bash
+cd backend
+npm test
+```
 
-- **Frontend**: Deploy to Vercel for global CDN and automatic deployments
-- **Backend**: Deploy to Render or AWS (EC2/ECS) for scalable server infrastructure
-- **Database**: Use managed PostgreSQL services (AWS RDS, Render PostgreSQL, or Supabase)
-- **Cache**: Deploy Redis on AWS ElastiCache or use managed Redis services
 
 ## License
 

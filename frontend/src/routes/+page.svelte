@@ -24,7 +24,7 @@
 	async function loadLatestLinks() {
 		latestLinksLoading = true;
 		try {
-			const response = await fetch(`${BACKEND_URL}/api/links?limit=10`);
+			const response = await fetch(`${BACKEND_URL}/api/links?limit=10&sort=newest`);
 			const data = await response.json();
 
 			if (!response.ok) {
