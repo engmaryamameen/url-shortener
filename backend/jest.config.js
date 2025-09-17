@@ -9,4 +9,4 @@ module.exports = {
   moduleNameMapper: {
     '^nanoid$': '<rootDir>/tests/__mocks__/nanoid.js'
   }
-}
+};
